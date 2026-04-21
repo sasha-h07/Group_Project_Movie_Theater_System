@@ -4,7 +4,6 @@ Description:
 
 
 */
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -101,7 +100,7 @@ public:
     }
 
     /*
-     DONALD STURKEY
+     Michael Turner
      Display seating chart
     */
     string getSeatingChart() const {
@@ -173,7 +172,7 @@ public:
 
     /*
      
-     Sales report (Isaac)
+     Sales report (Isaac McKeon)
     */
     string getSalesReport() const {
         int sold = 0, available = 0;
