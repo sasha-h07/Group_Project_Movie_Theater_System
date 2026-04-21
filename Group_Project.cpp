@@ -173,7 +173,7 @@ public:
 
     /*
      
-     Sales report
+     Sales report (Isaac)
     */
     string getSalesReport() const {
         int sold = 0, available = 0;
