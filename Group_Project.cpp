@@ -38,7 +38,7 @@ private:
     Seat seats[ROWS][COLS];
     double totalSales;
     double rowPrice[ROWS];
-
+    
     /*
      DONALD STURKEY
      Load seat prices and availability
@@ -129,6 +129,7 @@ public:
             startSeat < 0 || startSeat + numSeats > COLS ||
             numSeats <= 0)
             return "Invalid seat selection.\n";
+            
 
         for (int i = 0; i < numSeats; i++)
             if (!seats[row][startSeat + i].available)
