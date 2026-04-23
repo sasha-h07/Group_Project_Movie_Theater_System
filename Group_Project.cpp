@@ -38,18 +38,18 @@ private:
     Seat seats[ROWS][COLS];
     double totalSales;
     double rowPrice[ROWS];
-    
+
     /*
      DONALD STURKEY
      Load seat prices and availability
     */
-    void loadData(){
-	 ifstream priceFile("SeatPrices.dat");
+    void loadData() {
+        ifstream priceFile("SeatPrices.dat");
         ifstream seatFile("SeatAvailability.dat");
 
         // Load prices
         for (int r = 0; r < ROWS; r++) {
-            
+
             if (priceFile)
                 priceFile >> rowPrice[r];
             else
@@ -59,14 +59,14 @@ private:
         // Load seating
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
-                
+
                 if (seatFile)
                     seatFile >> seats[r][c].available;
                 else
                     seats[r][c].available = '#';
 
                 seats[r][c].price = rowPrice[r];
-	 }
+            }
         }
     }
 
@@ -86,6 +86,9 @@ private:
     }
 
 public:
+
+    bool invalidSeat = false;
+
     /*
      DONALD STURKEY
      Constructor / Destructor
@@ -100,7 +103,6 @@ public:
     }
 
     /*
-     Michael Turner
      Display seating chart
     */
     string getSeatingChart() const {
@@ -122,19 +124,22 @@ public:
      Ticket request validation and price quote logic
      =====================================================
     */
-    string requestTickets(int row, int startSeat, int numSeats) const {
+    string requestTickets(int row, int startSeat, int numSeats) {
         ostringstream out;
 
         if (row < 0 || row >= ROWS ||
             startSeat < 0 || startSeat + numSeats > COLS ||
-            numSeats <= 0)
+            numSeats <= 0) 
+        {
+            invalidSeat = true;
             return "Invalid seat selection.\n";
-            
+        }
 
         for (int i = 0; i < numSeats; i++)
-            if (!seats[row][startSeat + i].available)
+            if (!seats[row][startSeat + i].available) {
+                invalidSeat = true;
                 return "One or more selected seats are unavailable.\n";
-
+            }
         double cost = seats[row][0].price * numSeats;
 
         out << fixed << setprecision(2);
@@ -172,8 +177,6 @@ public:
     }
 
     /*
-     
-     Sales report (Isaac McKeon)
     */
     string getSalesReport() const {
         int sold = 0, available = 0;
@@ -201,16 +204,24 @@ public:
 */
 void displayMenu() {
     cout << "\n===== MENU =====\n"
-         << "1. Display Seating Chart\n"
-         << "2. Request Tickets\n"
-         << "3. Print Sales Report\n"
-         << "4. Exit\n"
-         << "Enter choice: ";
+        << "1. Display Seating Chart\n"
+        << "2. Request Tickets\n"
+        << "3. Print Sales Report\n"
+        << "4. Exit\n"
+        << "Enter choice: ";
+}
+
+void welcomeScreen() {
+    cout << "Welcome to Curington Theater!" << endl << endl;
+    cout << "Now Playing: Nightmare on CTC Street IV: Student Tears" << endl;
+    system("pause");
 }
 
 int main() {
     TicketManager manager;
     int choice;
+
+    welcomeScreen();
 
     do {
         displayMenu();
@@ -229,17 +240,44 @@ int main() {
             int row, seat, num;
             double payment;
 
-            cout << "Enter row (1–15): ";
-            cin >> row;
-            cout << "Enter starting seat (1–30): ";
-            cin >> seat;
-            cout << "Enter number of seats: ";
-            cin >> num;
+            do {
+                do {
+                    cout << "Enter row (1�15): ";
+                    cin >> row;
+                    if (cin.fail() || row > 15 || row < 1) {
+                        cout << "Invalid Row #" << endl;
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        row = 0;
+                    }
+                } while (row > 15 || row < 1);
 
-            row--;
-            seat--;
+                do {
+                    cout << "Enter starting seat (1�30): ";
+                    cin >> seat;
+                    if (cin.fail() || seat > 30 || seat < 1) {
+                        cout << "Invalid Seat #" << endl;
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        seat = 0;
+                    }
+                } while (seat > 30 || seat < 1);
 
-            cout << manager.requestTickets(row, seat, num);
+                do {
+                    cout << "Enter number of seats: ";
+                    cin >> num;
+                    if (cin.fail() || num < 1 || (seat + num > 30)) {
+                        cout << "Invalid Amount of Seats" << endl;
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        num = 0;
+                    }
+                } while (num < 1 || (seat + num - 1 > 30));
+
+                row--;
+                seat--;
+                cout << manager.requestTickets(row, seat, num);
+            } while (manager.invalidSeat == true);
 
             cout << "Enter payment amount: $";
             cin >> payment;
@@ -254,12 +292,12 @@ int main() {
         }
         else {
             cout << "Invalid option.\n";
+            system("pause");
+            cin.clear();
+            system("cls");
         }
 
     } while (choice != 4);
 
     return 0;
 }
-
-
-
