@@ -125,6 +125,7 @@ public:
      =====================================================
     */
     string requestTickets(int row, int startSeat, int numSeats) {
+        invalidSeat = false;
         ostringstream out;
 
         if (row < 0 || row >= ROWS ||
